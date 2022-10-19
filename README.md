@@ -79,4 +79,5 @@ Also, there's a bug which prevents the API server to switch to validating the po
 
 ## Thanks and greetings
 My thanks go to the team of Sprout.ai that gave me the motivation to expand my knowledge of Python web frameworks. Because of this task, I got a chance to pick some knowledge of FastAPI from scratch, and so far I'm definitely impressed with this tool =).
+
 I'd also like to mention my ex-colleague and friend [@akuskis](https://github.com/akuskis) for giving me some extra inspiration to dig deeper and to explore further 🙌.
