@@ -70,7 +70,7 @@ async def store_and_validate(post: Post, settings: Settings = Depends(settings))
         return SubmissionResult(post_id=post_id, language_check_pending=True)
 
     try:
-        await wait_for(completion_event.wait(), 1.0)  # settings.sync_wait_timeout)
+        await wait_for(completion_event.wait(), settings.sync_wait_timeout)
     except TimeoutError:
         logging.info("Post failed to process synchronously within given time, returning pending status...")
         return SubmissionResult(post_id=post_id, language_check_pending=True)
