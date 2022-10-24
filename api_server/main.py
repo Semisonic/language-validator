@@ -1,6 +1,7 @@
 import logging
 from asyncio import Task, create_task, TimeoutError, wait_for
 from fastapi import FastAPI, Response, Depends, status
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 from api_server.config import settings, Settings
 from api_server.queue_worker import sentence_queue_worker
@@ -61,7 +62,7 @@ async def store_and_validate(post: Post, settings: Settings = Depends(settings))
     db = PostDB.instance()
 
     if (sentence_count := len(queue.queue) + len(sentences)) > settings.sentence_queue_rejection_threshold:
-        return Response(content=ServiceUnavailable(), status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
+        return JSONResponse(content=ServiceUnavailable().json(), status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
 
     post_id = db.insert_new(PostData(post.title, post.paragraphs))
     completion_event = await queue.append(post_id, sentences)
