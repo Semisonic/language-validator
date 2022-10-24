@@ -46,6 +46,7 @@ The server is expected to provide the following functionality:
  
 ## Tech stack
 To run this app, you'll need `python 3.10` and the latest versions of `fastapi`, `uvicorn` and `requests` packages (more outdated versions may also work, but I can't guarantee that).
+To run tests you'll also need a fresh version of `pytest` and `pytest-asyncio`installed.
 
 ## Steps to run
 
@@ -73,8 +74,14 @@ Finally, both the API server and the language validation server provide auto-gen
 ## Server configurations
 Both API server and language validation server can be configured by modifying their respective `config.py` files. Another way would be to set up environment variables with names matching the names of `api_server.config.Settings` and `ml_server.config.Settings` classes. See [FastAPI docs](https://fastapi.tiangolo.com/advanced/settings/) for more info.
 
+## Tests
+*Most* of the project's functionality is covered by test cases, which are located in `./tests`. To run them, simply type
+
+    pytest
+   in the shell while in the repo's root folder.
+
 ## Issues and limitations
-At the moment, there are no automatic tests added, but this will be resolved in the nearest future.
+At the moment, there are no test cases checking the FastAPI's built-in validation of requests' input. This is due to unexpected incorrect behaviour on the FastAPI side.
 Also, there's a bug which prevents the API server to switch to validating the post contents in background ([post on StackOverflow](https://stackoverflow.com/questions/74132015/asyncio-wait-for-doesnt-time-out-as-expected) that describes it).
 
 ## Thanks and greetings
