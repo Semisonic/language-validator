@@ -1,3 +1,4 @@
+import pytest
 from fastapi.testclient import TestClient
 from ml_server.main import app, settings
 from ml_server.config import Settings
@@ -31,6 +32,22 @@ def test_app_unavailable():
     )
 
     assert response.status_code == 503
+
+
+@pytest.mark.parametrize("json", [
+    {"fragment": 1},
+    {"fragment": ""},
+    {"frag": "ment"},
+    {"fragment": "valid", "this_one": "not so much"},
+])
+def test_app_validation(json):
+    response = TestClient(app).post(
+        url="/sentences/",
+        json=json,
+        headers={"accept": "application/json", "Content-Type": "application/json"},
+    )
+
+    assert response.status_code == 422
 
 
 def test_app(validator: SentenceValidator, sentence_res: tuple[str, bool]):

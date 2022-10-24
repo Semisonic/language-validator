@@ -2,16 +2,22 @@ import logging
 from asyncio import Task, create_task, TimeoutError, wait_for
 from fastapi import FastAPI, Response, Depends, status
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, StrictStr, Extra, validator
 from api_server.config import settings, Settings
 from api_server.queue_worker import sentence_queue_worker
 from api_server.sentence_queue import SentenceQueue
 from api_server.storage import PostDB, PostData, FoulLanguageStatus
 
 
-class Post(BaseModel):
-    title: str = Field(min_length=1)
-    paragraphs: list[str] = Field(min_items=1)
+class Post(BaseModel, extra=Extra.forbid):
+    title: StrictStr = Field(title="Post title", min_length=1)
+    paragraphs: list[StrictStr] = Field(title="Post content", min_items=1)
+
+    @validator("paragraphs", each_item=True)
+    def check_not_empty(cls, v):
+        if not v:
+            raise ValueError("Empty paragraph")
+        return v
 
 
 class SubmissionResult(BaseModel):

@@ -1,14 +1,14 @@
 import random
 from asyncio import sleep
 from fastapi import FastAPI, Response, Depends, status
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, StrictStr, Extra
 
 from ml_server.validator import SentenceValidator
 from ml_server.config import settings, Settings
 
 
-class Sentence(BaseModel):
-    fragment: str = Field(title="Sentence to analyse", min_length=1)
+class Sentence(BaseModel, extra=Extra.forbid):
+    fragment: StrictStr = Field(title="Sentence to analyse", min_length=1)
 
 
 class ValidationResult(BaseModel):

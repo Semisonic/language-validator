@@ -36,6 +36,30 @@ def test_app_unavailable():
     assert response.status_code == 503
 
 
+@pytest.mark.parametrize("json", [
+    {"title": 1},
+    {"title": ""},
+    {"title": "just title, no content"},
+    {"paragraphs": ""},
+    {"paragraphs": [""]},
+    {"paragraphs": ["just content, no title"]},
+    {"title": "title ok", "paragraphs": "bad format"},
+    {"title": "title ok", "paragraphs": []},
+    {"title": "title ok", "paragraphs": ["sometimes maybe good", "", "sometimes maybe empty"]},
+    {"title": 1, "paragraphs": ["content ok"]},
+    {"title": "", "paragraphs": ["content ok"]},
+    {"title": "title ok", "paragraphs": ["content ok"], "extra": "unexpected"},
+])
+def test_app_validation(json):
+    response = TestClient(app).post(
+        url="/posts/",
+        json=json,
+        headers={"accept": "application/json", "Content-Type": "application/json"},
+    )
+
+    assert response.status_code == 422
+
+
 def test_app_async(monkeypatch):
     app.dependency_overrides[settings] = settings_async
 
