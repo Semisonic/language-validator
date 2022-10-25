@@ -8,21 +8,23 @@ from api_server.config import Settings
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "sentences,sentence_res",
+    "sentences,sentence_res,overall_res",
     [
         (
             ["quick brown fox", "lazy. yellow, bear", " dimwit staff", "mighty! monstrous: mega nugget!!"],
             [False, False, True, True],
+            FoulLanguageStatus.DETECTED,
         ),
         (
             ["lovely", "beautiful", "language"],
             [False, False, False],
+            FoulLanguageStatus.NOT_DETECTED,
         )
     ]
 )
 async def test_queue_worker(
     post_db: PostDB, sentence_queue: SentenceQueue, settings: Settings,
-    sentences: list[str], sentence_res: list[bool],
+    sentences: list[str], sentence_res: list[bool], overall_res: FoulLanguageStatus,
     monkeypatch
 ):
     validation: dict[str, bool] = dict(zip(sentences, sentence_res))
@@ -46,4 +48,4 @@ async def test_queue_worker(
 
     await completion_event.wait()
 
-    assert post_db.posts[post_id].status == FoulLanguageStatus.DETECTED if any(sentence_res) else FoulLanguageStatus.NOT_DETECTED
+    assert post_db.posts[post_id].status == overall_res
